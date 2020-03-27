@@ -1,3 +1,6 @@
+include_directories("/usr/local/apr/include/apr-1")
+link_directories("/usr/local/apr/lib")
+
 cmake_minimum_required(VERSION 3.0)
 
 set(DEMO_NAME lidar_sample_cc)

@@ -1,3 +1,5 @@
+include_directories("/usr/local/apr/include/apr-1/")
+
 cmake_minimum_required(VERSION 3.0)
 
 set(SDK_LIBRARY ${PROJECT_NAME}_static)
@@ -8,30 +10,19 @@ set(LIVOX_SDK_MINOR_VERSION "2")
 set(LIVOX_SDK_PATCH_VERSION "1")
 set(LIVOX_SDK_VERSION_STRING "${LIVOX_SDK_MAJOR_VERSION}.${LIVOX_SDK_MINOR_VERSION}.${LIVOX_SDK_PATCH_VERSION}")
 
-if (WIN32)
-    find_path(APR_INCLUDE_DIRS apr.h)
-    find_library(APR_LIBRARIES libapr-1)
-    if (APR_LIBRARIES AND APR_INCLUDE_DIRS)
-        set(APR_FOUND "YES")
-    endif (APR_LIBRARIES AND APR_INCLUDE_DIRS)
-else (WIN32)
-    find_package(PkgConfig)
-    pkg_check_modules(APR apr-1)
-endif (WIN32)
+find_path(APR_INCLUDE_DIRS apr.h)
+find_library(APR_LIBRARIES libapr-1 PATHS "/usr/local/apr/lib/")
+if (APR_LIBRARIES AND APR_INCLUDE_DIRS)
+	set(APR_FOUND "YES")
+endif (APR_LIBRARIES AND APR_INCLUDE_DIRS)
 
 if (APR_FOUND)
     target_include_directories(${SDK_LIBRARY}
             PUBLIC
             ${APR_INCLUDE_DIRS})
-    if (APR_LIBRARY_DIRS AND NOT APPLE)
-        target_link_libraries(${SDK_LIBRARY}
-                PUBLIC
-                ${APR_LIBRARY_DIRS}/libapr-1.so)
-    else ()
-        target_link_libraries(${SDK_LIBRARY}
-                PUBLIC
-                ${APR_LIBRARIES})
-    endif ()
+    target_link_libraries(${SDK_LIBRARY}
+        PUBLIC
+        ${APR_LIBRARIES})
 endif ()
 
 find_package(Boost 1.54 REQUIRED COMPONENTS system)
